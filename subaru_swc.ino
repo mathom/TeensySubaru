@@ -4,21 +4,7 @@ int swc2Pin = A3;
 int baseMeasurement = 0;
 
 // emperically derived values here...
-int swcEdges[] = { 10, 22, 40, 90, -1 };
-
-/*
-typedef enum {
-  SWC_SEEK_UP     = 0,
-  SWC_SEEK_DOWN   = 1,
-  SWC_VOLUME_UP   = 2,
-  SWC_VOLUME_DOWN = 3,
-  SWC_MODE        = 4,
-  SWC_HANG_UP     = 5,
-  SWC_CALL        = 6,
-  SWC_SPEAK       = 7,
-  SWC_NONE        = 8
-} SWC_EVENT;
-*/
+int swcEdges[] = { 10, 22, 40, 90, 0 };
 
 #define  SWC_SEEK_UP      0
 #define  SWC_SEEK_DOWN    1
@@ -38,15 +24,14 @@ typedef struct {
 } EVENT_KEY;
 
 EVENT_KEY eventKeys[] = {
-      {CONSUMER, 0x52, 0x00}, // seek up (dpad up)
-      {CONSUMER, 0x51, 0x00}, // seek down (dpad down)
+      {KEYBOARD, 0x65, 0x18}, // seek up (SEARCH+u)
+      {KEYBOARD, 0x65, 0x07}, // seek down (SEARCH+d)
       {CONSUMER, 0xe9, 0x00}, // vol up
       {CONSUMER, 0xea, 0x00}, // vol down
-      ///{KEYBOARD, 0x65, 0x13}, // mode (SEARCH+p)
-      {KEYBOARD, 0x3a, 0x00}, // mode (menu)
+      {KEYBOARD, 0x65, 0x10}, // mode (SEARCH+m)
       {KEYBOARD, 0x3d, 0x00}, // hang up (F4, endcall)
       {KEYBOARD, 0x3c, 0x00}, // call (F3, call)
-      {KEYBOARD, 0x3c, 0x00}, // voice menu
+      {KEYBOARD, 0x65, 0x19}, // voice menu (SEARCH+v)
       {0x00, 0x00, 0x00},
 };
 
@@ -103,18 +88,20 @@ unsigned long swc1DebounceTime = 0;
 unsigned long swc2DebounceTime = 0;
 int debounceDelay = 50;
 
+//#define DEBUG
+
 void debounceButtons(int swc1Value, int swc2Value) {
   unsigned long sampleTime = millis();
 
   int swc1Button = valueToEvent(swc1Value, swc1Buttons);
   int swc2Button = valueToEvent(swc2Value, swc2Buttons);
 
-  #ifdef debug
+  #ifdef DEBUG
   Keyboard.print("at ");
   Keyboard.print(sampleTime);
   Keyboard.print(" swc1=");
   Keyboard.print(swc1Value);
-  Keyboard.print("\tswc2=");
+  Keyboard.print("  swc2=");
   Keyboard.println(swc2Value);
   delay(1000);
   #endif
@@ -137,6 +124,8 @@ void debounceButtons(int swc1Value, int swc2Value) {
   
   swc1LastButton = swc1Button;
   swc2LastButton = swc2Button;
+  
+  delay(10);
 }
 
 int valueToEvent(int value, int *events) {
