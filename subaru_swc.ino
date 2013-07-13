@@ -67,6 +67,11 @@ int swc2Buttons[] = {
 };
 
 void setup() {
+  // work around a bug in the asteroid smart cold boot
+  UDCON |= (1<<DETACH);
+  delay(5000);
+  UDCON &= ~(1<<DETACH);
+
   pinMode(swc1Pin, INPUT_PULLUP);
   pinMode(swc2Pin, INPUT_PULLUP);
   delay(500); // let analog system settle
